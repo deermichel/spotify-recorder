@@ -22,12 +22,33 @@ exports.getTokens = () => new Promise((resolve, reject) => {
 
     } else { // request
         authorizeApp((authToken) => {
-            getTokensByAuthCode(authToken, (tokens) => {
+            const params = {
+                grant_type: "authorization_code",
+                code: authToken,
+                redirect_uri: config.redirect_uri
+            }
+            getTokens(params, (tokens) => {
                 fs.writeFileSync("tokens.json", JSON.stringify(tokens, null, 2), "utf8")
                 resolve(tokens)
             })
         })
     }
+})
+
+// refresh tokens
+exports.refreshTokens = (refreshToken) => new Promise((resolve, reject) => {
+    const params = {
+        grant_type: "refresh_token",
+        refresh_token: refreshToken
+    }
+    getTokens(params, (tokens) => {
+        const newTokens = {
+            access_token: tokens.access_token,
+            refresh_token: tokens.refresh_token || refreshToken
+        }
+        fs.writeFileSync("tokens.json", JSON.stringify(newTokens, null, 2), "utf8")
+        resolve(newTokens)
+    })
 })
 
 // authorize app and get auth code
@@ -69,15 +90,8 @@ const authorizeApp = (callback) => {
     opn("https://accounts.spotify.com/authorize?" + qs.stringify(params), { wait: false })
 }
 
-// exchange auth code for tokens
-const getTokensByAuthCode = (authCode, callback) => {
-    // set query params
-    const params = {
-        grant_type: "authorization_code",
-        code: authCode,
-        redirect_uri: config.redirect_uri
-    }
-
+// exchange auth code/refresh token for tokens
+const getTokens = (params, callback) => {
     // set header
     const authHeader = new Buffer(config.client_id + ":" + config.client_secret).toString("base64")
     const options = { headers: { "Authorization": "Basic " + authHeader } }

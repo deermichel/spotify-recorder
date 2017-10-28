@@ -13,6 +13,12 @@ exports.prepare = async () => {
     await setRepeatMode("off") // song-per-song recording
 }
 
+// play (single) song
+exports.playSong = (songUri) =>
+    axios.put("/me/player/play", {
+        uris: [ songUri ]
+    })
+
 // set player volume
 const setVolume = (volume) =>
     axios.put("/me/player/volume?volume_percent=" + volume)

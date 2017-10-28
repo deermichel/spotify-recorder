@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
+    "http-shutdown": "^1.2.0",
     "node-record-lpcm16": "^0.3.0",
     "opn": "^5.1.0",
     "qs": "^6.5.1"

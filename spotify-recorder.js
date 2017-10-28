@@ -9,6 +9,7 @@ const axios = require("axios")
 const fs = require("fs")
 const player = require("./player")
 const recorder = require("./recorder")
+const uriResolver = require("./uriResolver")
 
 // initialization
 const init = async () => {
@@ -34,6 +35,7 @@ const init = async () => {
 
     // const file = fs.createWriteStream("test.wav", { encoding: "binary" })
     // recorder.start(file)
+    // uriResolver("")
 }
 
 // start

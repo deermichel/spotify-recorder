@@ -7,12 +7,17 @@
 const authenticate = require("./authenticate")
 const axios = require("axios")
 const fs = require("fs")
+const metadata = require("./metadata")
 const player = require("./player")
 const recorder = require("./recorder")
 const uriResolver = require("./uriResolver")
 
 // initialization
 const init = async () => {
+    // create output folder
+    if (!fs.existsSync("out"))
+        fs.mkdirSync("out")
+
     // authenticate and get tokens
     const tokens = await authenticate.getTokens()
 
@@ -29,13 +34,33 @@ const init = async () => {
             await authenticate.refreshTokens(tokens.refresh_token)
             return init()
         } else {
-            console.log(error)
+            console.log(error.response.data || error)
         }
     }
 
-    // const file = fs.createWriteStream("test.wav", { encoding: "binary" })
-    // recorder.start(file)
-    // uriResolver("")
+    // retrieve track ids from uri
+    const tracks = await uriResolver("spotify:track:59PPpIN9gGeOCEIMwA0QX7")
+
+    // record
+    console.log("recording " + tracks.length + " track(s)...")
+    tracks.forEach(track => process(track))
+}
+
+// process one track
+const process = async (trackId) => {
+    const trackMetadata = await metadata(trackId)
+    console.log(trackMetadata)
+    //     let file = fs.createWriteStream("test.wav", { encoding: "binary" })
+    //     let rec = recorder.start(file)
+    //     rec.on("finish", () => {
+    //         const encoder = new Lame({
+    //             output: "test.mp3",
+    //             bitrate: 320,
+    //             quality: 2
+    //         }).setFile("test.wav")
+    //         encoder.encode()
+    //     })
+    //     player.playSong("spotify:track:" + track)
 }
 
 // start

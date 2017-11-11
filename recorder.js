@@ -7,15 +7,15 @@
 const record = require("node-record-lpcm16")
 
 // start recording
-exports.start = (destFile) => {
-    record.start({
+exports.start = (destStream) => {
+    return record.start({
         // device: "",
         channels: 2,
         sampleRate: 44100,
         silence: "0:05",
-        threshold: 0.01,
-        verbose: true
-    }).pipe(destFile)
+        threshold: 0.01
+        // verbose: true
+    }).pipe(destStream)
 }
 
 // stop recording

@@ -1,4 +1,5 @@
 package-lock.json
-node_modules
+node_modules/
 tokens.json
 .DS_Store
+out/

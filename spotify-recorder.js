@@ -39,28 +39,34 @@ const init = async () => {
     }
 
     // retrieve track ids from uri
-    const tracks = await uriResolver("spotify:track:59PPpIN9gGeOCEIMwA0QX7")
+    const tracks = await uriResolver(process.argv[2])
 
     // record
-    console.log("recording " + tracks.length + " track(s)...")
-    tracks.forEach(track => process(track))
+    work(tracks)
 }
 
-// process one track
-const process = async (trackId) => {
+// record tracks
+const work = async (tracks) => {
+    // pop first track
+    console.log("\n" + tracks.length + " track(s) remaining...")
+    if (tracks.length == 0)
+        return
+    const trackId = tracks.shift()
+
+    // retrieve metadata
     const trackMetadata = await metadata(trackId)
-    console.log(trackMetadata)
-    //     let file = fs.createWriteStream("test.wav", { encoding: "binary" })
-    //     let rec = recorder.start(file)
-    //     rec.on("finish", () => {
-    //         const encoder = new Lame({
-    //             output: "test.mp3",
-    //             bitrate: 320,
-    //             quality: 2
-    //         }).setFile("test.wav")
-    //         encoder.encode()
-    //     })
-    //     player.playSong("spotify:track:" + track)
+    console.log("recording: " + trackMetadata.artist + " - " + trackMetadata.title)
+
+    // start recording
+    const wavFile = "out/" + trackId + ".wav"
+    const mp3File = "out/" + trackMetadata.artist + " - " + trackMetadata.title + ".mp3"
+    recorder(wavFile, mp3File, trackMetadata, () => {
+        console.log("finished")
+        fs.unlinkSync(wavFile) // cleanup
+        fs.unlinkSync(trackMetadata.artwork)
+        work(tracks) // recurse
+    })
+    player.playSong("spotify:track:" + trackId)
 }
 
 // start

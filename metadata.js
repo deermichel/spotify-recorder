@@ -24,7 +24,7 @@ module.exports = async (trackId) => {
         album: response.data.album.name,
         artist: response.data.artists[0].name,
         track: response.data.track_number,
-        // artwork: artworkFile
+        artwork: artworkFile
     }
 }
 

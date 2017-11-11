@@ -65,7 +65,7 @@ const authorizeApp = (callback) => {
     const server = httpShutdown(http.createServer((req, res) => {
         const data = url.parse(req.url, true).query
         if (data.code) {
-            console.log("retrieved auth code: " + data.code);
+            console.log("retrieved auth code: " + data.code)
 
             // close tab and stop server
             res.writeHeader(200, { "Content-Type": "text/html" })
